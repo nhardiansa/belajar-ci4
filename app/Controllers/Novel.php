@@ -7,18 +7,18 @@ use Config\Services;
 
 class Novel extends BaseController
 {
-    protected $novel;
+    protected $novelModel;
 
     public function __construct()
     {
-        $this->novel = new NovelModel();
+        $this->novelModel = new NovelModel();
     }
 
     public function index()
     {
         $data = [
             "title" => "Novel",
-            "komik" => $this->novel->getNovel()
+            "komik" => $this->novelModel->getNovel()
         ];
 
         return view("novel/index", $data);
@@ -28,7 +28,7 @@ class Novel extends BaseController
     {
         $data = [
             "title" => "Detail Novel",
-            "detail" => $this->novel->getNovel($slug)
+            "detail" => $this->novelModel->getNovel($slug)
         ];
 
 
@@ -84,7 +84,7 @@ class Novel extends BaseController
             "sampul" => $this->request->getVar("sampul"),
         ];
 
-        $this->novel->save($data);
+        $this->novelModel->save($data);
 
         session()->setFlashdata('pesan', 'Novel Berhasil Ditambahkan');
 
@@ -93,9 +93,77 @@ class Novel extends BaseController
 
     public function delete($id)
     {
-        $this->novel->delete($id);
+        $this->novelModel->delete($id);
 
         session()->setFlashdata('pesan', 'Novel Berhasil Dihapus');
+        return redirect()->to('/novel');
+    }
+
+    public function edit($slug)
+    {
+        $data = [
+            "title" => "Tambah Novel",
+            "validation" => \Config\Services::validation(),
+            "komik" => $this->novelModel->getNovel($slug)
+        ];
+
+        return view("novel/edit", $data);
+    }
+
+    public function update($id)
+    {
+        // Pengechekan input
+        $oldNovel = $this->novelModel->getNovel($this->request->getVar('slug'));
+
+        if ($oldNovel['judul'] === $this->request->getVar('judul')) {
+            $rule_judul = "required";
+        } else {
+            $rule_judul = "required|is_unique[novel.judul]";
+        }
+
+        // Validasi Input
+        if (!$this->validate([
+            "judul" => [
+                "rules" => $rule_judul,
+                "errors" => [
+                    "is_unique" => "{field} novel sudah terdaftar",
+                    "required" => "Masukan {field} novel terlebih dahulu"
+                ]
+            ],
+            "penulis" => [
+                "rules" => "required",
+                "errors" => [
+                    "required" => "Masukan nama {field}"
+                ]
+            ],
+            "penerbit" => [
+                "rules" => "required",
+                "errors" => [
+                    "required" => "Masukan nama {field}"
+                ]
+            ]
+        ])) {
+            $validation = \Config\Services::validation();
+            return redirect()->to("/novel/edit/" . $this->request->getVar('slug'))->withInput()->with("validation", $validation);
+        }
+
+        // Input Data
+
+        $slug = url_title($this->request->getVar("judul"), '-', true);
+
+        $data = [
+            "id" => $id,
+            "judul" => $this->request->getVar("judul"),
+            "slug" => $slug,
+            "penulis" => $this->request->getVar("penulis"),
+            "penerbit" => $this->request->getVar("penerbit"),
+            "sampul" => $this->request->getVar("sampul"),
+        ];
+
+        $this->novelModel->save($data);
+
+        session()->setFlashdata('pesan', 'Novel Berhasil Diubah');
+
         return redirect()->to('/novel');
     }
 }

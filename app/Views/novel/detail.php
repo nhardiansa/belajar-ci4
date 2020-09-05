@@ -17,7 +17,7 @@
                             <h5 class="card-title"><?= $detail['judul']; ?></h5>
                             <p class="card-text"><b>Penulis: </b><?= $detail['penulis']; ?></p>
                             <p class="card-text"><b>Penerbit: </b><?= $detail['penerbit']; ?></p>
-                            <a href="" class="btn btn-warning">Edit</a>
+                            <a href="/novel/edit/<?= $detail['slug']; ?>" class="btn btn-warning">Edit</a>
                             <form action="/novel/<?= $detail['id']; ?>" class="d-inline" method="POST">
                                 <?= csrf_field(); ?>
                                 <input type="hidden" name="_method" value="DELETE">
