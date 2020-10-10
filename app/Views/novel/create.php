@@ -7,10 +7,10 @@
         <div class="col-6">
             <h2 class="mt-3 mb-4">Tambah Novel</h2>
 
-            <form action="/novel/save" method="post">
+            <form action="/novel/save" method="post" enctype="multipart/form-data">
                 <?= csrf_field(); ?>
                 <div class="form-group row">
-                    <label for="judul" class="col-sm-2 col-form-label">Email</label>
+                    <label for="judul" class="col-sm-2 col-form-label">Judul</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control <?= $validation->hasError('judul') ? 'is-invalid' : ''; ?>" id="judul" name="judul" autofocus value="<?= old('judul'); ?>">
                         <div id="validationServer03Feedback" class="invalid-feedback">
@@ -38,8 +38,14 @@
                 </div>
                 <div class="form-group row">
                     <label for="sampul" class="col-sm-2 col-form-label">Sampul</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="sampul" name="sampul" value="<?= old('sampul'); ?>">
+                    <div class="col">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input <?= $validation->hasError('sampul') ? 'is-invalid' : ''; ?>" id="sampul" name="sampul" onchange="prevImgName()">
+                            <label class="custom-file-label" for="sampul">Pilih sampul ...</label>
+                            <div id="validationServer03Feedback" class="invalid-feedback">
+                                <?= $validation->getError('sampul'); ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group row">

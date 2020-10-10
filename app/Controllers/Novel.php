@@ -68,10 +68,31 @@ class Novel extends BaseController
                 "errors" => [
                     "required" => "Masukan nama {field}"
                 ]
+            ],
+            "sampul" => [
+                "rules" => "max_size[sampul,1024]|is_image[sampul]|mime_in[sampul,image/jpg,image/jpeg,image/png]",
+                "errors" => [
+                    "max_size" => "Ukuran {field} terlalu besar",
+                    "is_image" => "Yang anda pilih bukan gambar",
+                    "mime_in" => "Yang anda pilih bukan gambar"
+                ]
             ]
         ])) {
-            $validation = \Config\Services::validation();
-            return redirect()->to("/novel/create")->withInput()->with("validation", $validation);
+            return redirect()->to("/novel/create")->withInput();
+        }
+
+        // kelola gambar
+        $fileSampul = $this->request->getFile("sampul");
+
+        if ($fileSampul->getError() === 4) {
+
+            $namaSampul = "default.jpg";
+        } else {
+            // generate nama random
+            $namaSampul = $fileSampul->getRandomName();
+
+            // memindahkan sampul ke folder img
+            $fileSampul->move("img", $namaSampul);
         }
 
         $slug = url_title($this->request->getVar("judul"), '-', true);
@@ -81,7 +102,7 @@ class Novel extends BaseController
             "slug" => $slug,
             "penulis" => $this->request->getVar("penulis"),
             "penerbit" => $this->request->getVar("penerbit"),
-            "sampul" => $this->request->getVar("sampul"),
+            "sampul" => $namaSampul
         ];
 
         $this->novelModel->save($data);
@@ -93,6 +114,17 @@ class Novel extends BaseController
 
     public function delete($id)
     {
+        // mendapatkan nama file
+        $namaSampul = $this->novelModel->find($id);
+        $namaSampul = $namaSampul['sampul'];
+        // dd($namaSampul);
+
+        if ($namaSampul !== "default.jpg") {
+            //menghapus gambar
+            unlink("img/$namaSampul");
+        }
+
+
         $this->novelModel->delete($id);
 
         session()->setFlashdata('pesan', 'Novel Berhasil Dihapus');
@@ -143,8 +175,7 @@ class Novel extends BaseController
                 ]
             ]
         ])) {
-            $validation = \Config\Services::validation();
-            return redirect()->to("/novel/edit/" . $this->request->getVar('slug'))->withInput()->with("validation", $validation);
+            return redirect()->to("/novel/edit/" . $this->request->getVar('slug'))->withInput();
         }
 
         // Input Data
