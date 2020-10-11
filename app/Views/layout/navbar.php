@@ -8,6 +8,7 @@
             <div class="navbar-nav">
                 <a class="nav-link active" href="/">Home</a>
                 <a class="nav-link" href="/novel">Novel</a>
+                <a class="nav-link" href="/user">User</a>
                 <a class="nav-link" href="/pages/about">About</a>
             </div>
         </div>
