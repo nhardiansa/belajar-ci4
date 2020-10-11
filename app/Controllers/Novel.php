@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use \App\Models\NovelModel;
-use Config\Services;
 
 class Novel extends BaseController
 {
@@ -72,7 +71,7 @@ class Novel extends BaseController
             "sampul" => [
                 "rules" => "max_size[sampul,1024]|is_image[sampul]|mime_in[sampul,image/jpg,image/jpeg,image/png]",
                 "errors" => [
-                    "max_size" => "Ukuran {field} terlalu besar",
+                    "max_size" => "Ukuran {field} terlalu besar (maksimal ukuran 2MB)",
                     "is_image" => "Yang anda pilih bukan gambar",
                     "mime_in" => "Yang anda pilih bukan gambar"
                 ]
@@ -121,7 +120,7 @@ class Novel extends BaseController
 
         if ($namaSampul !== "default.jpg") {
             //menghapus gambar
-            unlink("img/$namaSampul");
+            unlink("img/" . $namaSampul);
         }
 
 
@@ -136,7 +135,7 @@ class Novel extends BaseController
         $data = [
             "title" => "Tambah Novel",
             "validation" => \Config\Services::validation(),
-            "komik" => $this->novelModel->getNovel($slug)
+            "novel" => $this->novelModel->getNovel($slug)
         ];
 
         return view("novel/edit", $data);
@@ -173,9 +172,32 @@ class Novel extends BaseController
                 "errors" => [
                     "required" => "Masukan nama {field}"
                 ]
+            ],
+            "sampul" => [
+                "rules" => "max_size[sampul,1024]|is_image[sampul]|mime_in[sampul,image/jpg,image/jpeg,image/png]",
+                "errors" => [
+                    "max_size" => "Ukuran {field} terlalu besar (maksimal ukuran 2MB)",
+                    "is_image" => "Yang anda pilih bukan gambar",
+                    "mime_in" => "Yang anda pilih bukan gambar"
+                ]
             ]
         ])) {
             return redirect()->to("/novel/edit/" . $this->request->getVar('slug'))->withInput();
+        }
+
+        $sampulInput = $this->request->getFile('sampul');
+        $sampulLama = $this->request->getVar('sampulLama');
+
+        if ($sampulInput->getError() === 4) {
+            $sampul = $sampulLama;
+        } else {
+
+            // generate nama random
+            $sampul = $sampulInput->getRandomName();
+            // pindahkan sampul ke folder img
+            $sampulInput->move('img', $sampul);
+            // hapus gambar sampul yang lama
+            unlink("img/" . $sampulLama);
         }
 
         // Input Data
@@ -188,7 +210,7 @@ class Novel extends BaseController
             "slug" => $slug,
             "penulis" => $this->request->getVar("penulis"),
             "penerbit" => $this->request->getVar("penerbit"),
-            "sampul" => $this->request->getVar("sampul"),
+            "sampul" => $sampul
         ];
 
         $this->novelModel->save($data);
