@@ -17,6 +17,14 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <?php $i = 1; ?>
+                    <?php foreach ($user as $u) : ?>
+                        <tr>
+                            <th scope="row"><?= $i++; ?></th>
+                            <td><?= $u["nama"]; ?></td>
+                            <td><?= $u["alamat"]; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
 

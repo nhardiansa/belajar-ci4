@@ -9,4 +9,9 @@ class UserModel extends Model
     protected $table = "user";
     protected $useTimestamps = true;
     protected $allowedFields = ["nama", "alamat"];
+
+    public function getUser()
+    {
+        return $this->findAll();
+    }
 }

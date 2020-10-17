@@ -2,14 +2,23 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
+use \App\Models\UserModel;
 
-class User extends Controller
+class User extends BaseController
 {
+
+    protected $userModel;
+
+    public function __construct()
+    {
+        $this->userModel = new UserModel();
+    }
+
     public function index()
     {
         $data = [
-            "title" => "User Page"
+            "title" => "User Page",
+            "user" => $this->userModel->getUser()
         ];
 
         return view("user/index", $data);
