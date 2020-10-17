@@ -10,8 +10,8 @@ class UserModel extends Model
     protected $useTimestamps = true;
     protected $allowedFields = ["nama", "alamat"];
 
-    public function getUser()
+    public function search($keyword)
     {
-        return $this->findAll();
+        return $this->table($this->table)->like('nama', $keyword)->orLike('alamat', $keyword);
     }
 }
