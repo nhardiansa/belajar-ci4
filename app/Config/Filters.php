@@ -21,6 +21,7 @@ class Filters extends BaseConfig
 		'before' => [
 			//'honeypot'
 			// 'csrf',
+			// 'has_login'
 		],
 		'after'  => [
 			'toolbar',
@@ -36,5 +37,7 @@ class Filters extends BaseConfig
 	// List filter aliases and any before/after uri patterns
 	// that they should run on, like:
 	//    'isLoggedIn' => ['before' => ['account/*', 'profiles/*']],
-	public $filters = [];
+	public $filters = [
+		'has_login' => ['before' => ['novel', 'user']]
+	];
 }
