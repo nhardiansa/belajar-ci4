@@ -9,6 +9,9 @@ class Pages extends BaseController
 		$data = [
 			'title' => 'Homepage'
 		];
+
+		// d($_SESSION);
+
 		return view('pages/home', $data);
 	}
 

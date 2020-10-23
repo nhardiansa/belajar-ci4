@@ -33,10 +33,18 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Pages::index');
 
-$routes->get('/novel/create', 'Novel::create');
-$routes->get('/novel/edit/(:segment)', 'Novel::edit/$1');
-$routes->delete("/novel/(:num)", "Novel::delete/$1");
-$routes->get('/novel/(:any)', 'Novel::detail/$1');
+$routes->get('/novel', 'Novel::index', ["filter" => "has_login"]);
+
+$routes->get('/novel/create', 'Novel::create', ["filter" => "has_login"]);
+$routes->get('/novel/edit/(:segment)', 'Novel::edit/$1', ["filter" => "has_login"]);
+$routes->delete("/novel/(:num)", "Novel::delete/$1", ["filter" => "has_login"]);
+$routes->get('/novel/(:any)', 'Novel::detail/$1', ["filter" => "has_login"]);
+
+
+$routes->get("/login", "Auth::login", ["filter" => "logged_in"]);
+$routes->get("/register", "Auth::register", ["filter" => "logged_in"]);
+$routes->get("/logout", "Auth::logout");
+
 /**
  * --------------------------------------------------------------------
  * Additional Routing

@@ -12,6 +12,10 @@ class Auth extends BaseController
     public function __construct()
     {
         $this->authModel = new AuthModel();
+
+        if (session()->has("logged_in") === true) {
+            return redirect()->to("/");
+        }
     }
 
     public function register()
@@ -28,7 +32,7 @@ class Auth extends BaseController
     {
         if (!$this->validate([
             "nama" => [
-                "rules" => "required|alpha|min_length[5]",
+                "rules" => "required|alpha|min_length[3]",
                 "errors" => [
                     "required" => "{field} harus diisi",
                     "alpha" => "masukkan input yang valid",
@@ -69,7 +73,9 @@ class Auth extends BaseController
 
         $this->authModel->save($data);
 
-        return redirect()->to("/auth/register");
+        session()->setFlashdata("registerSuccess", "Anda telah berhasil mendafatar, silahkan login untuk masuk");
+
+        return redirect()->to("/auth/login");
     }
 
     public function login()
@@ -106,12 +112,19 @@ class Auth extends BaseController
         $password = $this->request->getVar("password");
 
         if ($this->authModel->getLogin($email, $password)) {
-            return redirect()->to("/auth/login");
+            return redirect()->to("/");
             // echo "berhasil";
         } else {
             // echo "gagal";
             session()->setFlashdata("error", "Email atau Password salah");
             return redirect()->to("/auth/login")->withInput();
         }
+    }
+
+    public function logout()
+    {
+        session()->stop();
+        session()->destroy();
+        return redirect()->to("/");
     }
 }

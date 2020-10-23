@@ -13,14 +13,23 @@
 
                     <?php if (session()->getFlashdata('error')) : ?>
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <?= session()->getFlashdata('pesan'); ?>
+                            <?= session()->getFlashdata('error'); ?>
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                     <?php endif; ?>
 
-                    <form action="/auth/signin" method="POST">
+                    <?php if (session()->getFlashdata('registerSuccess')) : ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <?= session()->getFlashdata('registerSuccess'); ?>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <?php endif; ?>
+
+                    <form class="mb-4" action="/auth/signin" method="POST">
                         <?= csrf_field(); ?>
 
                         <div class="form-group">
@@ -38,8 +47,11 @@
                                 <?= $validation->getError('password'); ?>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Daftar</button>
+                        <button type="submit" class="btn btn-primary">Masuk</button>
                     </form>
+                    <div class="">
+                        <span>Belum punya akun? </span><a href="/register" class="card-link">Daftar</a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -11,6 +11,14 @@
                 <a class="nav-link" href="/user">User</a>
                 <a class="nav-link" href="/pages/about">About</a>
             </div>
+            <div class="navbar-nav ml-auto">
+                <?php if (session()->get("logged_in")) : ?>
+                    <a class="nav-link" href="/logout">Logout</a>
+                <?php else : ?>
+                    <a class="nav-link" href="/login">Login</a>
+                    <a class="nav-link" href="/register">Register</a>
+                <?php endif ?>
+            </div>
         </div>
     </div>
 </nav>
